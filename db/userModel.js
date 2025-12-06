@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   location: { type: String },
   description: { type: String },
   occupation: { type: String },
+  username: { type: String, sparse: true, unique: true },
 });
 
 module.exports = mongoose.model.Users || mongoose.model("Users", userSchema);
