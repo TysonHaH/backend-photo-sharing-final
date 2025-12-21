@@ -46,7 +46,6 @@ router.get("/:id", async (req, res) => {
       "_id first_name last_name"
     ).lean();
 
-    // 6. Tạo map id → user info
     const commentersMap = {};
     commenters.forEach((u) => {
       commentersMap[String(u._id)] = {
@@ -56,7 +55,6 @@ router.get("/:id", async (req, res) => {
       };
     });
 
-    // 7. Build kết quả theo đúng format API
     const resultPhotos = photos.map((photo) => {
       const newComments = (photo.comments || []).map((c) => ({
         _id: c._id,
