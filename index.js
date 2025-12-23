@@ -2,6 +2,8 @@ const express = require("express")
 const app = express();
 const cors = require("cors");
 const session = require("express-session");
+const multer = require('multer');
+const path = require('path');
 const dbConnect = require("./db/dbConnect");
 const UserRouter = require("./routes/UserRouter");
 const PhotoRouter = require("./routes/PhotoRouter");
@@ -26,6 +28,19 @@ app.use(session({
 },
 }));
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // directory
+    cb(null, 'images'); 
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+const upload = multer({ storage: storage });
+
+app.use('/images', express.static(path.join(__dirname, 'images'))); 
+
 app.use("/user", UserRouter);
 app.use("/photosOfUser", PhotoRouter);
 app.use("/commentsOfPhoto", CommentRouter);
@@ -35,38 +50,6 @@ app.get("/", (req, res) => {
   res.send({ message: "Hello from photo-sharing app API!" });
 });
 
-app.post("/register", async (req, res) => {
-  const {
-    last_name,
-    location,
-    description,
-    occupation,
-    username,
-    password,
-  } = req.body;
-  if (!username || !password  || !last_name) {
-    return res.status(400).send({ message: "Missing required fields" });
-  }
-  try {
-    const isExist = await User.findOne({ username });
-    if (isExist) {
-      return res.status(400).send({ message: "User already exists" });
-    }
-    const user = new User({
-      username,
-      password,
-      last_name,
-      location,
-      description,
-      occupation
-    });
-    await user.save();
-    res.status(200).send({message: "Success!"});
-  } catch (error) {
-    console.error("Error registering user:", error);
-    res.status(500).send({ message: "Internal Server Error" });
-  }
-});
 app.listen(8081, () => {
   console.log("server listening on port 8081");
 });

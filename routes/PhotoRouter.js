@@ -9,6 +9,15 @@ const {
   Types: { ObjectId },
 } = mongoose;
 
+router.get("/count/:id", async(req,res) => {
+  const id = req.params.id;
+  try {
+    const cnt = await Photo.countDocuments({user_id : id});
+    res.status(200).send({count: cnt});
+  } catch(err){
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
 // GET /photosOfUser/:id
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
@@ -79,5 +88,6 @@ router.get("/:id", async (req, res) => {
     res.status(500).send({ message: "Internal server error" });
   }
 });
+
 
 module.exports = router;
