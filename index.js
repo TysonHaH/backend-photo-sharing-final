@@ -13,7 +13,7 @@ const User = require("./db/userModel");
 dbConnect();
 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: true,
   credentials: true
 }));
 app.use(express.json());
