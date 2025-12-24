@@ -29,38 +29,30 @@ router.get('/:id', async (req, res) => {
   try {
     const user = await User.findById(
       id,
-      '_id first_name last_name location description occupation'
+      '_id last_name location description occupation'
     ).lean();
 
     if (!user) {
       return res.status(400).send({ message: 'User not found.' });
     }
-    // user đã là plain object với đúng field cần dùng
     res.status(200).json(user);
   } catch (err) {
     console.error('Error fetching user:', err);
     res.status(500).send({ message: 'Internal server error' });
   }
 });
-
-router.post("/pass/:id", async (req, res) => {
-  const id = req.params.id;
-  const { current_password, new_password } = req.body;
+router.patch('/:id', async (req, res) => {
   try {
-    const user = await User.findById(id);
-    if (!user) return res.status(404).send({ message: "User not found" });
-
-    if (user.password !== current_password) {
-      return res.status(400).send({ message: "Incorrect current password" });
-    }
-
-    user.password = new_password;
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      req.body,  
+    );
     await user.save();
-    res.status(200).send({ message: "Password updated successfully" });
-  } catch (err) {
-    console.error("Update password error:", err);
-    res.status(500).send({ message: "Internal Server Error" });
+    res.json(user);
+  } catch (error) {
+    res.status(500).send(error);
   }
 });
+
 
 module.exports = router;

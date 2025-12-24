@@ -13,7 +13,7 @@ const User = require("./db/userModel");
 dbConnect();
 
 app.use(cors({
-  origin: true,
+  origin: "http://localhost:3000",
   credentials: true
 }));
 app.use(express.json());
@@ -23,10 +23,22 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
+    secure: false,
     httpOnly: true,
     maxAge: 60 * 30 * 1000, 
 },
 }));
+// app.set('trust proxy', 1); // Cực kỳ quan trọng khi deploy lên host có proxy (như CodeSandbox, Heroku)
+
+// app.use(session({
+//   // ...
+//   cookie: {
+//     maxAge: 1000 * 60 * 60 * 24, 
+//     sameSite: 'none', // Cho phép gửi cookie cross-site
+//     secure: true,     // Bắt buộc phải là true nếu sameSite là 'none' (chỉ chạy trên https)
+//     httpOnly: true,
+//   }
+// }));
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
